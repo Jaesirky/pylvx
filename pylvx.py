@@ -74,7 +74,6 @@ class DeivceInfo:
         hs = ''.join(['%02X' % x for x in bs])
         return float.fromhex(hs)
 
-
     @property
     def pitch(self):
         bs = self.bs[39:43]
@@ -141,7 +140,7 @@ class LvxFile:
 
 
 if __name__ == '__main__':
-    lf = LvxFile(r'D:\work\code\livox-radar\lvxdemos\2020-10-12 12-12-39.lvx')
+    lf = LvxFile(r'lvxdemos\2020-10-12 12-12-39.lvx')
     # print(lf.public_header_block.bs)
     # print(lf.public_header_block.file_signature)
     # print(lf.public_header_block.version_a)
@@ -168,7 +167,6 @@ if __name__ == '__main__':
     #     print(device.z)
 
     for frame in lf.point_data_block:
-        # print('frame  -----')
         # print(frame.bs)
         # print(frame.frame_header.current_offset)
         # print(frame.frame_header.next_offset)
@@ -229,6 +227,6 @@ if __name__ == '__main__':
                     # print(point.tag2)
                 elif package.data_type == DataType.IMU_:
                     point: Point6
-                    print(package.data_type, point.acc_x, point.acc_y, point.acc_z, point.gyro_x, point.gyro_y, point.gyro_z)
+                    # print(package.data_type, point.acc_x, point.acc_y, point.acc_z, point.gyro_x, point.gyro_y, point.gyro_z)
                 else:
                     raise Exception

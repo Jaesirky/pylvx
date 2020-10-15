@@ -1,4 +1,6 @@
-from _utils import floatfrombytes
+def _floatfrombytes(bs):
+    hs = ''.join(['%02X' % x for x in bs])
+    return float.fromhex(hs)
 
 
 class DataType:
@@ -191,27 +193,27 @@ class Point6:
 
     @property
     def gyro_x(self):
-        return floatfrombytes(self.bs[:4])
+        return _floatfrombytes(self.bs[:4])
 
     @property
     def gyro_y(self):
-        return floatfrombytes(self.bs[4:8])
+        return _floatfrombytes(self.bs[4:8])
 
     @property
     def gyro_z(self):
-        return floatfrombytes(self.bs[8:12])
+        return _floatfrombytes(self.bs[8:12])
 
     @property
     def acc_x(self):
-        return floatfrombytes(self.bs[12:16])
+        return _floatfrombytes(self.bs[12:16])
 
     @property
     def acc_y(self):
-        return floatfrombytes(self.bs[16:20])
+        return _floatfrombytes(self.bs[16:20])
 
     @property
     def acc_z(self):
-        return floatfrombytes(self.bs[20:24])
+        return _floatfrombytes(self.bs[20:24])
 
 
 class Package:
