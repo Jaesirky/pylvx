@@ -1,4 +1,4 @@
-from _frame import FrameHeader, Frame, DataType, Point0, Point1, Point2, Point3, Point4, Point5, Point6
+from _frame import FrameHeader, Frame, DataType, Point0, Point1, Point2, Point3, Point4, Point5, Point6, Package
 
 
 class PublicHeader:
@@ -29,6 +29,14 @@ class PublicHeader:
     def magic_code(self):
         # ? 无符号是否这样转
         return int.from_bytes(self.bs[20:24], 'little')
+
+    def __str__(self):
+        return 'file_signature'.format(lf.public_header_block.file_signature,
+                                       lf.public_header_block.version_a,
+                                       lf.public_header_block.version_b,
+                                       lf.public_header_block.version_c,
+                                       lf.public_header_block.version_d,
+                                       lf.public_header_block.magic_code)
 
 
 class PrivateHeader:
@@ -139,94 +147,48 @@ class LvxFile:
             frame_header = FrameHeader(self.fp.read(24))
 
 
+def asdict(obj):
+    d = {}
+    for attr in dir(obj):
+        if not attr.startswith('__') and not attr.startswith('_'):
+            d[attr] = getattr(obj, attr)
+    return d
+
+
 if __name__ == '__main__':
     lf = LvxFile(r'lvxdemos\2020-10-12 12-12-39.lvx')
-    # print(lf.public_header_block.bs)
-    # print(lf.public_header_block.file_signature)
-    # print(lf.public_header_block.version_a)
-    # print(lf.public_header_block.version_b)
-    # print(lf.public_header_block.version_c)
-    # print(lf.public_header_block.version_d)
-    # print(lf.public_header_block.magic_code)
-    #
-    # print(lf.private_header_block.bs)
-    # print(lf.private_header_block.frame_duration)
-    # print(lf.private_header_block.device_count)
-    #
-    # for device in lf.device_info_block:
-    #     print(device.lidar_sn_code)
-    #     print(device.hub_sn_code)
-    #     print(device.device_index)
-    #     print(device.device_type)
-    #     print(device.extrinsic_enable)
-    #     print(device.roll)
-    #     print(device.pitch)
-    #     print(device.yaw)
-    #     print(device.x)
-    #     print(device.y)
-    #     print(device.z)
+
+    print(asdict(lf))
+    print(asdict(lf.public_header_block))
+    print(asdict(lf.private_header_block))
+
+    for device in lf.device_info_block:
+        device: DeivceInfo
+        print(asdict(device))
 
     for frame in lf.point_data_block:
-        # print(frame.bs)
-        # print(frame.frame_header.current_offset)
-        # print(frame.frame_header.next_offset)
-        # print(frame.frame_header.frame_index)
+        frame: Frame
+        print(asdict(frame))
 
         for package in frame.packages:
-            # print(package.device_index)
-            # print(package.version)
-            # print(package.slot_id)
-            # print(package.lidar_id)
-            # print(package.reserved)
-            # print(package.status_code)
-            # print(package.timestamp_type)
-            # print(package.data_type)
-            # print(package.timestamp)
+            package: Package
+            print(asdict(package))
+
             for point in package.points:
                 if package.data_type == DataType.CARTESIAN_MID:
                     point: Point0
-                    # print(point.x)
-                    # print(point.y)
-                    # print(point.z)
-                    # print(point.reflectivity)
                 elif package.data_type == DataType.SPHERICAL_MID:
                     point: Point1
-                    # print(point.depth)
-                    # print(point.phi)
-                    # print(point.theta)
-                    # print(point.reflectivity)
                 elif package.data_type == DataType.CARTESIAN_SINGLE:
                     point: Point2
-                    print(package.data_type, point.x, point.y, point.z, point.reflectivity, point.tag)
                 elif package.data_type == DataType.SPHERAICAL_SINGLE:
                     point: Point3
-                    # print(point.depth)
-                    # print(point.phi)
-                    # print(point.theta)
-                    # print(point.reflectivity)
-                    # print(point.tag)
                 elif package.data_type == DataType.CARTESIAN_DOUBLE:
                     point: Point4
-                    # print(point.x1)
-                    # print(point.y1)
-                    # print(point.z1)
-                    # print(point.reflectivity1)
-                    # print(point.x2)
-                    # print(point.y2)
-                    # print(point.z2)
-                    # print(point.reflectivity2)
                 elif package.data_type == DataType.SPHERAICAL_DOUBLE:
                     point: Point5
-                    # print(point.phi)
-                    # print(point.theta)
-                    # print(point.depth1)
-                    # print(point.reflectivity1)
-                    # print(point.tag1)
-                    # print(point.depth2)
-                    # print(point.reflectivity2)
-                    # print(point.tag2)
                 elif package.data_type == DataType.IMU_:
                     point: Point6
-                    # print(package.data_type, point.acc_x, point.acc_y, point.acc_z, point.gyro_x, point.gyro_y, point.gyro_z)
                 else:
                     raise Exception
+                print(asdict(point))

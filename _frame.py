@@ -288,7 +288,7 @@ class Package:
             point_class = Point6
         else:
             raise Exception
-        return [point_class(self.bs[19 + i * point_size:19 + point_size * (i + 1)]) for i in range(point_count)]
+        return [point_class(self.bs[19 + i * point_size: 19 + point_size * (i + 1)]) for i in range(point_count)]
 
 
 class FrameHeader:
@@ -344,5 +344,5 @@ class Frame:
                 point_count = 1
             else:
                 raise Exception(pakcage_header.data_type)
-            yield Package(self.bs[current_offset:19 + point_size * point_count])
+            yield Package(self.bs[current_offset:current_offset + 19 + point_size * point_count])
             current_offset += 19 + point_size * point_count
