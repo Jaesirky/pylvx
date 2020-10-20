@@ -1,4 +1,5 @@
 from _frame import FrameHeader, Frame, DataType, Point0, Point1, Point2, Point3, Point4, Point5, Point6, Package
+import os
 
 
 class PublicHeader:
@@ -29,14 +30,6 @@ class PublicHeader:
     def magic_code(self):
         # ? 无符号是否这样转
         return int.from_bytes(self.bs[20:24], 'little')
-
-    def __str__(self):
-        return 'file_signature'.format(lf.public_header_block.file_signature,
-                                       lf.public_header_block.version_a,
-                                       lf.public_header_block.version_b,
-                                       lf.public_header_block.version_c,
-                                       lf.public_header_block.version_d,
-                                       lf.public_header_block.magic_code)
 
 
 class PrivateHeader:
@@ -155,40 +148,76 @@ def asdict(obj):
     return d
 
 
-if __name__ == '__main__':
-    lf = LvxFile(r'lvxdemos\2020-10-12 12-12-39.lvx')
+def topcds(lvxfile, outdir):
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
 
-    print(asdict(lf))
-    print(asdict(lf.public_header_block))
-    print(asdict(lf.private_header_block))
-
+    lf = LvxFile(lvxfile)
     for device in lf.device_info_block:
         device: DeivceInfo
         print(asdict(device))
 
     for frame in lf.point_data_block:
-        frame: Frame
-        print(asdict(frame))
-
+        timestamp = 0
+        data_type = None
+        points = []
         for package in frame.packages:
             package: Package
-            print(asdict(package))
-
+            if not timestamp:
+                timestamp = package.timestamp
+            if data_type is None:
+                data_type = package.data_type
             for point in package.points:
-                if package.data_type == DataType.CARTESIAN_MID:
-                    point: Point0
-                elif package.data_type == DataType.SPHERICAL_MID:
-                    point: Point1
-                elif package.data_type == DataType.CARTESIAN_SINGLE:
-                    point: Point2
-                elif package.data_type == DataType.SPHERAICAL_SINGLE:
-                    point: Point3
-                elif package.data_type == DataType.CARTESIAN_DOUBLE:
-                    point: Point4
-                elif package.data_type == DataType.SPHERAICAL_DOUBLE:
-                    point: Point5
-                elif package.data_type == DataType.IMU_:
-                    point: Point6
-                else:
-                    raise Exception
-                print(asdict(point))
+                if package.data_type == data_type:
+                    points.append(point)
+        f = open(os.path.join(outdir, '{}_{}.pcd'.format(frame.frame_header.frame_index + 1, timestamp)), 'w')
+
+        f.write('VERSION 0.7\n')
+        if data_type == DataType.CARTESIAN_MID:
+            field_line = "FIELDS x y z reflectivity"
+            type_line = "TYPE I I I U"
+            size_line = "SIZE 4 4 4 1"
+            count_line = "COUNT 1 1 1 1"
+        elif data_type == DataType.SPHERICAL_MID:
+            field_line = "FIELDS theta phi depth reflectivity"
+            type_line = "TYPE U U I U"
+            size_line = "SIZE 2 2 4 1"
+            count_line = "COUNT 1 1 1 1"
+        elif data_type == DataType.CARTESIAN_SINGLE:
+            field_line = "FIELDS x y z reflectivity tag"
+            type_line = "TYPE I I I U U"
+            size_line = "SIZE 4 4 4 1 1"
+            count_line = "COUNT 1 1 1 1 1"
+        elif data_type == DataType.SPHERAICAL_SINGLE:
+            field_line = "FIELDS theta phi depth reflectivity tag"
+            type_line = "TYPE U U I U U"
+            size_line = "SIZE 2 2 4 1 1"
+            count_line = "COUNT 1 1 1 1 1"
+        elif data_type == DataType.CARTESIAN_DOUBLE:
+            field_line = "FIELDS x1 y1 z1 reflectivity1 tag1 x2 y2 z2 reflectivity2 tag2"
+            type_line = "TYPE I I I U U I I I U U"
+            size_line = "SIZE 4 4 4 1 1 4 4 4 1 1"
+            count_line = "COUNT 1 1 1 1 1 1 1 1 1 1"
+        elif data_type == DataType.SPHERAICAL_DOUBLE:
+            field_line = "FIELDS theta phi depth1 reflectivity1 tag1 depth2 reflectivity2 tag2"
+            type_line = "TYPE U U I U U I U U"
+            size_line = "SIZE 2 2 4 1 1 4 1 1"
+            count_line = "COUNT 1 1 1 1 1 1 1 1"
+        else:
+            raise
+
+        f.write(field_line + '\n')
+        f.write(size_line + '\n')
+        f.write(type_line + '\n')
+        f.write(count_line + '\n')
+        f.write('WIDTH {}\n'.format(len(points)))
+        f.write('HEIGHT 1\n')
+        f.write('VIEWPOINT 0 0 0 1 0 0 0\n')
+        f.write('POINTS {}\n'.format(len(points)))
+        f.write('DATA ascii\n')
+
+        for p in points:
+            fields = field_line.split(' ')[1:]
+            values = [str(getattr(p, field)) for field in fields]
+            f.write(' '.join(values) + '\n')
+        f.close()

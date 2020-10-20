@@ -10,7 +10,7 @@ class DataType:
     SPHERAICAL_SINGLE = 3
     CARTESIAN_DOUBLE = 4
     SPHERAICAL_DOUBLE = 5
-    IMU_ = 6
+    IMU_INFO = 6
 
 
 class Point0:
@@ -282,7 +282,7 @@ class Package:
             point_size = 16
             point_count = 48
             point_class = Point5
-        elif self.data_type == DataType.IMU_:
+        elif self.data_type == DataType.IMU_INFO:
             point_size = 24
             point_count = 1
             point_class = Point6
@@ -339,7 +339,7 @@ class Frame:
             elif pakcage_header.data_type == DataType.SPHERAICAL_DOUBLE:
                 point_size = 16
                 point_count = 48
-            elif pakcage_header.data_type == DataType.IMU_:
+            elif pakcage_header.data_type == DataType.IMU_INFO:
                 point_size = 24
                 point_count = 1
             else:
