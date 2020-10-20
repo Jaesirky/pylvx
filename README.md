@@ -1,3 +1,3 @@
-# 解析.lvx文件工具
+# Livox Viewer文件格式解析工具
 
-示例参考pylvx.py
+示例参考examples
