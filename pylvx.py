@@ -28,7 +28,6 @@ class PublicHeader:
 
     @property
     def magic_code(self):
-        # ? 无符号是否这样转
         return int.from_bytes(self.bs[20:24], 'little')
 
 
@@ -173,32 +172,32 @@ def topcds(lvxfile, outdir):
         f.write('VERSION 0.7\n')
         if data_type == DataType.CARTESIAN_MID:
             field_line = "FIELDS x y z reflectivity"
-            type_line = "TYPE I I I U"
+            type_line = "TYPE F F F U"
             size_line = "SIZE 4 4 4 1"
             count_line = "COUNT 1 1 1 1"
         elif data_type == DataType.SPHERICAL_MID:
             field_line = "FIELDS theta phi depth reflectivity"
-            type_line = "TYPE U U I U"
+            type_line = "TYPE U U F U"
             size_line = "SIZE 2 2 4 1"
             count_line = "COUNT 1 1 1 1"
         elif data_type == DataType.CARTESIAN_SINGLE:
             field_line = "FIELDS x y z reflectivity tag"
-            type_line = "TYPE I I I U U"
+            type_line = "TYPE F F F U U"
             size_line = "SIZE 4 4 4 1 1"
             count_line = "COUNT 1 1 1 1 1"
         elif data_type == DataType.SPHERAICAL_SINGLE:
             field_line = "FIELDS theta phi depth reflectivity tag"
-            type_line = "TYPE U U I U U"
+            type_line = "TYPE U U F U U"
             size_line = "SIZE 2 2 4 1 1"
             count_line = "COUNT 1 1 1 1 1"
         elif data_type == DataType.CARTESIAN_DOUBLE:
             field_line = "FIELDS x1 y1 z1 reflectivity1 tag1 x2 y2 z2 reflectivity2 tag2"
-            type_line = "TYPE I I I U U I I I U U"
+            type_line = "TYPE F F F U U F F F U U"
             size_line = "SIZE 4 4 4 1 1 4 4 4 1 1"
             count_line = "COUNT 1 1 1 1 1 1 1 1 1 1"
         elif data_type == DataType.SPHERAICAL_DOUBLE:
             field_line = "FIELDS theta phi depth1 reflectivity1 tag1 depth2 reflectivity2 tag2"
-            type_line = "TYPE U U I U U I U U"
+            type_line = "TYPE U U F U U F U U"
             size_line = "SIZE 2 2 4 1 1 4 1 1"
             count_line = "COUNT 1 1 1 1 1 1 1 1"
         else:
