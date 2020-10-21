@@ -152,6 +152,7 @@ def topcds(lvxfile, outdir):
         os.makedirs(outdir)
 
     lf = LvxFile(lvxfile)
+    print(lf.private_header_block.frame_duration)
 
     index = 0
     for frame in lf.point_data_block:
