@@ -1,6 +1,6 @@
-from _frame import FrameHeader, Frame, DataType, Point0, Point1, Point2, Point3, Point4, Point5, Point6, Package
+from ._frame import FrameHeader, Frame, DataType, Point0, Point1, Point2, Point3, Point4, Point5, Point6, Package
 import os
-
+from datetime import datetime
 
 class PublicHeader:
     def __init__(self, bs):
@@ -153,10 +153,8 @@ def topcds(lvxfile, outdir):
         os.makedirs(outdir)
 
     lf = LvxFile(lvxfile)
-    for device in lf.device_info_block:
-        device: DeivceInfo
-        print(asdict(device))
 
+    index = 0
     for frame in lf.point_data_block:
         timestamp = 0
         data_type = None
@@ -165,12 +163,12 @@ def topcds(lvxfile, outdir):
             package: Package
             if not timestamp:
                 timestamp = package.timestamp
-            if data_type is None:
+            if data_type is None and package.data_type != DataType.IMU_INFO:
                 data_type = package.data_type
             for point in package.points:
                 if package.data_type == data_type:
                     points.append(point)
-        f = open(os.path.join(outdir, '{}_{}.pcd'.format(frame.frame_header.frame_index + 1, timestamp)), 'w')
+        f = open(os.path.join(outdir, '{}.pcd'.format(datetime.fromtimestamp(timestamp/10**9).strftime('%Y%m%d%H%M%S%f'))), 'w')
 
         f.write('VERSION 0.7\n')
         if data_type == DataType.CARTESIAN_MID:
@@ -221,3 +219,4 @@ def topcds(lvxfile, outdir):
             values = [str(getattr(p, field)) for field in fields]
             f.write(' '.join(values) + '\n')
         f.close()
+        index+=1
