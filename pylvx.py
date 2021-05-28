@@ -25,15 +25,15 @@ class Point0:
 
     @property
     def x(self):
-        return int.from_bytes(self.bs[:4], 'little', signed=True) / 1000
+        return int.from_bytes(self.bs[:4], 'little', signed=True) 
 
     @property
     def y(self):
-        return int.from_bytes(self.bs[4:8], 'little', signed=True) / 1000
+        return int.from_bytes(self.bs[4:8], 'little', signed=True) 
 
     @property
     def z(self):
-        return int.from_bytes(self.bs[8:12], 'little', signed=True) / 1000
+        return int.from_bytes(self.bs[8:12], 'little', signed=True) 
 
     @property
     def reflectivity(self):
@@ -46,7 +46,7 @@ class Point1:
 
     @property
     def depth(self):
-        return int.from_bytes(self.bs[:4], 'little', signed=True) / 1000
+        return int.from_bytes(self.bs[:4], 'little', signed=True) 
 
     @property
     def theta(self):
@@ -67,15 +67,15 @@ class Point2:
 
     @property
     def x(self):
-        return int.from_bytes(self.bs[:4], 'little', signed=True) / 1000
+        return int.from_bytes(self.bs[:4], 'little', signed=True) 
 
     @property
     def y(self):
-        return int.from_bytes(self.bs[4:8], 'little', signed=True) / 1000
+        return int.from_bytes(self.bs[4:8], 'little', signed=True) 
 
     @property
     def z(self):
-        return int.from_bytes(self.bs[8:12], 'little', signed=True) / 1000
+        return int.from_bytes(self.bs[8:12], 'little', signed=True) 
 
     @property
     def reflectivity(self):
@@ -92,7 +92,7 @@ class Point3:
 
     @property
     def depth(self):
-        return int.from_bytes(self.bs[:4], 'little', signed=True) / 1000
+        return int.from_bytes(self.bs[:4], 'little', signed=True) 
 
     @property
     def theta(self):
@@ -117,15 +117,15 @@ class Point4:
 
     @property
     def x1(self):
-        return int.from_bytes(self.bs[:4], 'little', signed=True) / 1000
+        return int.from_bytes(self.bs[:4], 'little', signed=True) 
 
     @property
     def y1(self):
-        return int.from_bytes(self.bs[4:8], 'little', signed=True) / 1000
+        return int.from_bytes(self.bs[4:8], 'little', signed=True) 
 
     @property
     def z1(self):
-        return int.from_bytes(self.bs[8:12], 'little', signed=True) / 1000
+        return int.from_bytes(self.bs[8:12], 'little', signed=True) 
 
     @property
     def reflectivity1(self):
@@ -137,15 +137,15 @@ class Point4:
 
     @property
     def x2(self):
-        return int.from_bytes(self.bs[14:18], 'little', signed=True) / 1000
+        return int.from_bytes(self.bs[14:18], 'little', signed=True) 
 
     @property
     def y2(self):
-        return int.from_bytes(self.bs[18:22], 'little', signed=True) / 1000
+        return int.from_bytes(self.bs[18:22], 'little', signed=True) 
 
     @property
     def z2(self):
-        return int.from_bytes(self.bs[22:26], 'little', signed=True) / 1000
+        return int.from_bytes(self.bs[22:26], 'little', signed=True) 
 
     @property
     def reflectivity2(self):
@@ -170,7 +170,7 @@ class Point5:
 
     @property
     def depth1(self):
-        return int.from_bytes(self.bs[4:8], 'little', signed=True) / 1000
+        return int.from_bytes(self.bs[4:8], 'little', signed=True) 
 
     @property
     def reflectivity1(self):
@@ -182,7 +182,7 @@ class Point5:
 
     @property
     def depth2(self):
-        return int.from_bytes(self.bs[10:14], 'little', signed=True) / 1000
+        return int.from_bytes(self.bs[10:14], 'little', signed=True) 
 
     @property
     def reflectivity2(self):
