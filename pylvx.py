@@ -1,6 +1,358 @@
-from ._frame import FrameHeader, Frame, DataType, Point0, Point1, Point2, Point3, Point4, Point5, Point6, Package
 import os
 from datetime import datetime
+from pathlib import Path
+
+
+def _floatfrombytes(bs):
+    import struct
+    ans = struct.unpack("!f",bs)[0]
+    return ans
+
+
+class DataType:
+    CARTESIAN_MID = 0
+    SPHERICAL_MID = 1
+    CARTESIAN_SINGLE = 2
+    SPHERAICAL_SINGLE = 3
+    CARTESIAN_DOUBLE = 4
+    SPHERAICAL_DOUBLE = 5
+    IMU_INFO = 6
+
+
+class Point0:
+    def __init__(self, bs):
+        self.bs = bs
+
+    @property
+    def x(self):
+        return int.from_bytes(self.bs[:4], 'little', signed=True) / 1000
+
+    @property
+    def y(self):
+        return int.from_bytes(self.bs[4:8], 'little', signed=True) / 1000
+
+    @property
+    def z(self):
+        return int.from_bytes(self.bs[8:12], 'little', signed=True) / 1000
+
+    @property
+    def reflectivity(self):
+        return int.from_bytes(self.bs[12:13], 'little')
+
+
+class Point1:
+    def __init__(self, bs):
+        self.bs = bs
+
+    @property
+    def depth(self):
+        return int.from_bytes(self.bs[:4], 'little', signed=True) / 1000
+
+    @property
+    def theta(self):
+        return int.from_bytes(self.bs[4:6], 'little')
+
+    @property
+    def phi(self):
+        return int.from_bytes(self.bs[6:8], 'little')
+
+    @property
+    def reflectivity(self):
+        return int.from_bytes(self.bs[8:9], 'little')
+
+
+class Point2:
+    def __init__(self, bs):
+        self.bs = bs
+
+    @property
+    def x(self):
+        return int.from_bytes(self.bs[:4], 'little', signed=True) / 1000
+
+    @property
+    def y(self):
+        return int.from_bytes(self.bs[4:8], 'little', signed=True) / 1000
+
+    @property
+    def z(self):
+        return int.from_bytes(self.bs[8:12], 'little', signed=True) / 1000
+
+    @property
+    def reflectivity(self):
+        return int.from_bytes(self.bs[12:13], 'little')
+
+    @property
+    def tag(self):
+        return int.from_bytes(self.bs[13:14], 'little')
+
+
+class Point3:
+    def __init__(self, bs):
+        self.bs = bs
+
+    @property
+    def depth(self):
+        return int.from_bytes(self.bs[:4], 'little', signed=True) / 1000
+
+    @property
+    def theta(self):
+        return int.from_bytes(self.bs[4:6], 'little')
+
+    @property
+    def phi(self):
+        return int.from_bytes(self.bs[6:8], 'little')
+
+    @property
+    def reflectivity(self):
+        return int.from_bytes(self.bs[8:9], 'little')
+
+    @property
+    def tag(self):
+        return int.from_bytes(self.bs[9:10], 'little')
+
+
+class Point4:
+    def __init__(self, bs):
+        self.bs = bs
+
+    @property
+    def x1(self):
+        return int.from_bytes(self.bs[:4], 'little', signed=True) / 1000
+
+    @property
+    def y1(self):
+        return int.from_bytes(self.bs[4:8], 'little', signed=True) / 1000
+
+    @property
+    def z1(self):
+        return int.from_bytes(self.bs[8:12], 'little', signed=True) / 1000
+
+    @property
+    def reflectivity1(self):
+        return int.from_bytes(self.bs[12:13], 'little')
+
+    @property
+    def tag1(self):
+        return int.from_bytes(self.bs[13:14], 'little')
+
+    @property
+    def x2(self):
+        return int.from_bytes(self.bs[14:18], 'little', signed=True) / 1000
+
+    @property
+    def y2(self):
+        return int.from_bytes(self.bs[18:22], 'little', signed=True) / 1000
+
+    @property
+    def z2(self):
+        return int.from_bytes(self.bs[22:26], 'little', signed=True) / 1000
+
+    @property
+    def reflectivity2(self):
+        return int.from_bytes(self.bs[26:27], 'little')
+
+    @property
+    def tag2(self):
+        return int.from_bytes(self.bs[27:28], 'little')
+
+
+class Point5:
+    def __init__(self, bs):
+        self.bs = bs
+
+    @property
+    def theta(self):
+        return int.from_bytes(self.bs[:2], 'little')
+
+    @property
+    def phi(self):
+        return int.from_bytes(self.bs[2:4], 'little')
+
+    @property
+    def depth1(self):
+        return int.from_bytes(self.bs[4:8], 'little', signed=True) / 1000
+
+    @property
+    def reflectivity1(self):
+        return int.from_bytes(self.bs[8:9], 'little')
+
+    @property
+    def tag1(self):
+        return int.from_bytes(self.bs[9:10], 'little')
+
+    @property
+    def depth2(self):
+        return int.from_bytes(self.bs[10:14], 'little', signed=True) / 1000
+
+    @property
+    def reflectivity2(self):
+        return int.from_bytes(self.bs[14:15], 'little')
+
+    @property
+    def tag2(self):
+        return int.from_bytes(self.bs[15:16], 'little')
+
+
+class Point6:
+    def __init__(self, bs):
+        self.bs = bs
+
+    @property
+    def gyro_x(self):
+        return _floatfrombytes(self.bs[:4])
+
+    @property
+    def gyro_y(self):
+        return _floatfrombytes(self.bs[4:8])
+
+    @property
+    def gyro_z(self):
+        return _floatfrombytes(self.bs[8:12])
+
+    @property
+    def acc_x(self):
+        return _floatfrombytes(self.bs[12:16])
+
+    @property
+    def acc_y(self):
+        return _floatfrombytes(self.bs[16:20])
+
+    @property
+    def acc_z(self):
+        return _floatfrombytes(self.bs[20:24])
+
+
+class Package:
+    def __init__(self, bs):
+        self.bs = bs
+
+    @property
+    def device_index(self):
+        return int.from_bytes(self.bs[:1], 'little')
+
+    @property
+    def version(self):
+        return int.from_bytes(self.bs[1:2], 'little')
+
+    @property
+    def slot_id(self):
+        return int.from_bytes(self.bs[2:3], 'little')
+
+    @property
+    def lidar_id(self):
+        return int.from_bytes(self.bs[3:4], 'little')
+
+    @property
+    def reserved(self):
+        return int.from_bytes(self.bs[4:5], 'little')
+
+    @property
+    def status_code(self):
+        return int.from_bytes(self.bs[5:9], 'little')
+
+    @property
+    def timestamp_type(self):
+        return int.from_bytes(self.bs[9:10], 'little')
+
+    @property
+    def data_type(self):
+        return int.from_bytes(self.bs[10:11], 'little')
+
+    @property
+    def timestamp(self):
+        return int.from_bytes(self.bs[11:19], 'little')
+
+    @property
+    def points(self):
+        if self.data_type == DataType.CARTESIAN_MID:
+            point_size = 13
+            point_count = 100
+            point_class = Point0
+        elif self.data_type == DataType.SPHERICAL_MID:
+            point_size = 9
+            point_count = 100
+            point_class = Point1
+        elif self.data_type == DataType.CARTESIAN_SINGLE:
+            point_size = 14
+            point_count = 96
+            point_class = Point2
+        elif self.data_type == DataType.SPHERAICAL_SINGLE:
+            point_size = 10
+            point_count = 96
+            point_class = Point3
+        elif self.data_type == DataType.CARTESIAN_DOUBLE:
+            point_size = 28
+            point_count = 48
+            point_class = Point4
+        elif self.data_type == DataType.SPHERAICAL_DOUBLE:
+            point_size = 16
+            point_count = 48
+            point_class = Point5
+        elif self.data_type == DataType.IMU_INFO:
+            point_size = 24
+            point_count = 1
+            point_class = Point6
+        else:
+            raise Exception
+        return [point_class(self.bs[19 + i * point_size: 19 + point_size * (i + 1)]) for i in range(point_count)]
+
+
+class FrameHeader:
+    def __init__(self, bs):
+        self.bs = bs
+
+    @property
+    def current_offset(self):
+        return int.from_bytes(self.bs[:8], 'little')
+
+    @property
+    def next_offset(self):
+        return int.from_bytes(self.bs[8:16], 'little')
+
+    @property
+    def frame_index(self):
+        return int.from_bytes(self.bs[16:24], 'little')
+
+
+class Frame:
+    def __init__(self, bs):
+        self.bs = bs
+
+    @property
+    def frame_header(self):
+        return FrameHeader(self.bs[:24])
+
+    @property
+    def packages(self):
+        current_offset = 24
+        while current_offset < len(self.bs):
+            pakcage_header = Package(self.bs[current_offset:current_offset + 19])
+            if pakcage_header.data_type == DataType.CARTESIAN_MID:
+                point_size = 13
+                point_count = 100
+            elif pakcage_header.data_type == DataType.SPHERICAL_MID:
+                point_size = 9
+                point_count = 100
+            elif pakcage_header.data_type == DataType.CARTESIAN_SINGLE:
+                point_size = 14
+                point_count = 96
+            elif pakcage_header.data_type == DataType.SPHERAICAL_SINGLE:
+                point_size = 10
+                point_count = 96
+            elif pakcage_header.data_type == DataType.CARTESIAN_DOUBLE:
+                point_size = 28
+                point_count = 48
+            elif pakcage_header.data_type == DataType.SPHERAICAL_DOUBLE:
+                point_size = 16
+                point_count = 48
+            elif pakcage_header.data_type == DataType.IMU_INFO:
+                point_size = 24
+                point_count = 1
+            else:
+               return
+            yield Package(self.bs[current_offset:current_offset + 19 + point_size * point_count])
+            current_offset += 19 + point_size * point_count
+
 
 class PublicHeader:
     def __init__(self, bs):
@@ -134,7 +486,8 @@ class LvxFile:
 
         while frame_header.next_offset:
             self.fp.seek(current_offset)
-            yield Frame(self.fp.read(frame_header.next_offset - current_offset))
+            frame_len = frame_header.next_offset - current_offset
+            yield Frame(self.fp.read(frame_len))
             current_offset = frame_header.next_offset
             frame_header = FrameHeader(self.fp.read(24))
 
@@ -147,76 +500,67 @@ def asdict(obj):
     return d
 
 
-def topcds(lvxfile, outdir):
-    if not os.path.exists(outdir):
-        os.makedirs(outdir)
-
-    lf = LvxFile(lvxfile)
-    print(lf.private_header_block.frame_duration)
-
-    index = 0
-    for frame in lf.point_data_block:
-        timestamp = 0
+def topcds(lvxfile, outdir, frametime=100):
+    def _topcd(frames):
+        timestamps = []
         data_type = None
         points = []
-        for package in frame.packages:
-            package: Package
-            if not timestamp:
-                timestamp = package.timestamp
-            if data_type is None and package.data_type != DataType.IMU_INFO:
-                data_type = package.data_type
-            for point in package.points:
-                if package.data_type == data_type:
-                    points.append(point)
-        f = open(os.path.join(outdir, '{}.pcd'.format(datetime.fromtimestamp(timestamp/10**9).strftime('%Y%m%d%H%M%S%f'))), 'w')
+        for frame in frames:
+            timestamp = 0
+            for package in frame.packages:
+                package: Package
+                if not timestamp:
+                    timestamp = package.timestamp
+                if data_type is None and package.data_type != DataType.IMU_INFO:
+                    data_type = package.data_type
+                for point in package.points:
+                    if package.data_type == data_type:
+                        points.append(point)
+            timestamps.append(timestamp)
 
-        f.write('VERSION 0.7\n')
-        if data_type == DataType.CARTESIAN_MID:
-            field_line = "FIELDS x y z reflectivity"
-            type_line = "TYPE F F F U"
-            size_line = "SIZE 4 4 4 1"
-            count_line = "COUNT 1 1 1 1"
-        elif data_type == DataType.SPHERICAL_MID:
-            field_line = "FIELDS theta phi depth reflectivity"
-            type_line = "TYPE U U F U"
-            size_line = "SIZE 2 2 4 1"
-            count_line = "COUNT 1 1 1 1"
-        elif data_type == DataType.CARTESIAN_SINGLE:
-            field_line = "FIELDS x y z reflectivity tag"
-            type_line = "TYPE F F F U U"
-            size_line = "SIZE 4 4 4 1 1"
-            count_line = "COUNT 1 1 1 1 1"
-        elif data_type == DataType.SPHERAICAL_SINGLE:
-            field_line = "FIELDS theta phi depth reflectivity tag"
-            type_line = "TYPE U U F U U"
-            size_line = "SIZE 2 2 4 1 1"
-            count_line = "COUNT 1 1 1 1 1"
-        elif data_type == DataType.CARTESIAN_DOUBLE:
-            field_line = "FIELDS x1 y1 z1 reflectivity1 tag1 x2 y2 z2 reflectivity2 tag2"
-            type_line = "TYPE F F F U U F F F U U"
-            size_line = "SIZE 4 4 4 1 1 4 4 4 1 1"
-            count_line = "COUNT 1 1 1 1 1 1 1 1 1 1"
-        elif data_type == DataType.SPHERAICAL_DOUBLE:
-            field_line = "FIELDS theta phi depth1 reflectivity1 tag1 depth2 reflectivity2 tag2"
-            type_line = "TYPE U U F U U F U U"
-            size_line = "SIZE 2 2 4 1 1 4 1 1"
-            count_line = "COUNT 1 1 1 1 1 1 1 1"
-        else:
-            raise
+        timestamp = sum(timestamps) / len(timestamps)
+        if data_type not in [DataType.CARTESIAN_SINGLE, DataType.CARTESIAN_DOUBLE]:
+            print(data_type)
+            return
+        filename = datetime.fromtimestamp(timestamp / 10 ** 9).strftime('%Y%m%d%H%M%S%f')
+        filepath = os.path.join(outdir, '{}.pcd'.format(filename))
+        Path(filepath).parent.mkdir(parents=True, exist_ok=True)
+        if not os.path.exists(filepath):
+            f = open(filepath, 'w')
+            points_count = len(points) if data_type == DataType.CARTESIAN_SINGLE else 2 * len(points)
 
-        f.write(field_line + '\n')
-        f.write(size_line + '\n')
-        f.write(type_line + '\n')
-        f.write(count_line + '\n')
-        f.write('WIDTH {}\n'.format(len(points)))
-        f.write('HEIGHT 1\n')
-        f.write('VIEWPOINT 0 0 0 1 0 0 0\n')
-        f.write('POINTS {}\n'.format(len(points)))
-        f.write('DATA ascii\n')
+            f.write('VERSION 0.7\n')
+            f.write('FIELDS x y z reflectivity\n')
+            f.write('TYPE F F F U\n')
+            f.write('SIZE 4 4 4 1\n')
+            f.write('COUNT 1 1 1 1\n')
+            f.write('WIDTH {}\n'.format(points_count))
+            f.write('HEIGHT 1\n')
+            f.write('VIEWPOINT 0 0 0 1 0 0 0\n')
+            f.write('POINTS {}\n'.format(points_count))
+            f.write('DATA ascii\n')
 
-        for p in points:
-            fields = field_line.split(' ')[1:]
-            values = [str(getattr(p, field)) for field in fields]
-            f.write(' '.join(values) + '\n')
-        f.close()
-        index+=1
+            for p in points:
+                fields = 'x y z reflectivity'.split(' ')
+                if data_type == DataType.CARTESIAN_SINGLE:
+                    values = [str(getattr(p, field)) for field in fields]
+                    f.write(' '.join(values) + '\n')
+                else:
+                    values = [str(getattr(p, field + '1')) for field in fields]
+                    f.write(' '.join(values) + '\n')
+                    values = [str(getattr(p, field + '2')) for field in fields]
+                    f.write(' '.join(values) + '\n')
+
+            f.close()
+
+    lf = LvxFile(lvxfile)
+    duration = lf.private_header_block.frame_duration
+
+    frames = []
+    index = 0
+    for frame in lf.point_data_block:
+        frames.append(frame)
+        if (index + 1) % int(frametime / duration) == 0:
+            _topcd(frames)
+            frames = []
+        index += 1
