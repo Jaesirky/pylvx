@@ -423,38 +423,32 @@ class DeivceInfo:
     @property
     def roll(self):
         bs = self.bs[35:39]
-        hs = ''.join(['%02X' % x for x in bs])
-        return float.fromhex(hs)
+        return _floatfrombytes(bs)
 
     @property
     def pitch(self):
         bs = self.bs[39:43]
-        hs = ''.join(['%02X' % x for x in bs])
-        return float.fromhex(hs)
+        return _floatfrombytes(bs)
 
     @property
     def yaw(self):
         bs = self.bs[43:47]
-        hs = ''.join(['%02X' % x for x in bs])
-        return float.fromhex(hs)
+        return _floatfrombytes(bs)
 
     @property
     def x(self):
         bs = self.bs[47:51]
-        hs = ''.join(['%02X' % x for x in bs])
-        return float.fromhex(hs)
+        return _floatfrombytes(bs)
 
     @property
     def y(self):
         bs = self.bs[51:55]
-        hs = ''.join(['%02X' % x for x in bs])
-        return float.fromhex(hs)
+        return _floatfrombytes(bs)
 
     @property
     def z(self):
         bs = self.bs[55:59]
-        hs = ''.join(['%02X' % x for x in bs])
-        return float.fromhex(hs)
+        return _floatfrombytes(bs)
 
 
 class LvxFile:
